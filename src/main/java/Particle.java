@@ -27,6 +27,8 @@ public class Particle extends BodyDef {
         bodyDef.position.set(new Vec2(5.0f, -5.0f));
         body = box2DProcessing.createBody(bodyDef);
 
+//        body.setFixedRotation(true);
+
         PolygonShape box = new PolygonShape();
         box.setAsBox(this.width / 2, this.height / 2);
 
@@ -52,5 +54,9 @@ public class Particle extends BodyDef {
         pApplet.fill(255, 0, 0);
         pApplet.rect(pos.x, pos.y, this.width, this.height);
 
+    }
+
+    public Body getBody() {
+        return this.body;
     }
 }

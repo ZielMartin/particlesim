@@ -56,4 +56,8 @@ class Boundary {
         pApplet.rect(x,y,w,h);
     }
 
+    public Body getBody() {
+        return this.b;
+    }
+
 }

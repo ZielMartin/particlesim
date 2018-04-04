@@ -2,8 +2,10 @@ import javafx.scene.input.MouseButton;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
+import org.jbox2d.dynamics.joints.*;
 import processing.core.PApplet;
 import processing.core.PFont;
+import processing.event.MouseEvent;
 import shiffman.box2d.Box2DProcessing;
 
 import java.util.ArrayList;
@@ -16,9 +18,10 @@ public class Main extends PApplet {
     private Particle particle;
     private PFont f;
 
-    List<Particle> particles = new ArrayList<>();
+    private List<Particle> particles = new ArrayList<>();
+    private List<MouseJoint> joints = new ArrayList<>();
 
-    Boundary boundary;
+    private Boundary boundary;
 
 
     @Override
@@ -61,13 +64,20 @@ public class Main extends PApplet {
                     createParticle();
                     break;
                 case 39:
-                    for (int i = 0; i < 50; i++)
-                        createParticle();
-                    break;
-                case 3:
-                    particles.clear();
-                    box2DProcessing.createWorld();
-                    boundary = new Boundary(box2DProcessing, width / 2, height, width, 10);
+                    for(Particle p : particles) {
+
+                        Vec2 position = p.getBody().getPosition();
+
+                        Vec2 target = new Vec2(mouseX, mouseY);
+                        target = box2DProcessing.coordPixelsToWorld(target);
+
+                        Vec2 direction = target.sub(position);
+
+                        direction.normalize();
+                        direction.mulLocal(1000.0f);
+
+                        p.getBody().applyForceToCenter(direction);
+                    }
                     break;
             }
         }
@@ -85,10 +95,34 @@ public class Main extends PApplet {
     private void createParticle() {
         Particle p = new Particle(box2DProcessing);
 
+        System.out.println("creating particle at: " + mouseX + ";" + mouseY);
+
         Vec2 pos = box2DProcessing.coordPixelsToWorld(mouseX, mouseY);
 
         p.setPos(pos);
         particles.add(p);
+    }
+
+    @Override
+    public void mousePressed(MouseEvent event) {
+        super.mousePressed(event);
+        switch (event.getButton()) {
+            case 37:
+                //handled by draw
+                break;
+            case 3:
+                particles.clear();
+                box2DProcessing.createWorld();
+                boundary = new Boundary(box2DProcessing, width / 2, height, width, 10);
+                break;
+        }
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent event) {
+        super.mouseReleased(event);
+
+        System.out.println("released: " + event.getButton());
     }
 
     public static void main(String... args) {

@@ -19,7 +19,6 @@ gradle-app.setting
 
 .idea/
 
-lib/
 particlesim.iml
 particlesim.ipr
 
